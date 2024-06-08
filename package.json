@@ -1,0 +1,18 @@
+{
+  "name": "pk-utilities-bot",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "keywords": [],
+  "author": "Pokémon Kingdom",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "discord-api-types": "^0.37.87",
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.4.1"
+  }
+}
