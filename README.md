@@ -64,7 +64,7 @@ npm install pm2 -g
 1. Clone the repo
 
 ```sh
-git clone https://github.com/PokemonKingomd/utilities.git
+git clone https://github.com/PokemonKingdom/utilities.git
 ```
 
 2. Install NPM packages
