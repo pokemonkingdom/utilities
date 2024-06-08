@@ -1,1 +1,35 @@
-console.log('Hello, world!') // Hello, world! ._.
+// Fetch variables from .env file and other dependencies
+require('dotenv').config()
+const { token, dbToken } = process.env;
+const { connect } = require('mongoose');
+const { readdirSync } = require('fs');
+
+// Import discord.js and client attributes
+const { Client, Collection, Intents } = require('discord.js');
+const client = new Client({ intents: 32767 }); // 32767 is the sum of all intents, change before production!
+client.commands = new Collection();
+client.buttons = new Collection();
+client.selectMenus = new Collection();
+client.modals = new Collection();
+client.guildCommands = [];
+client.staffGuildCommands = [];
+client.globalCommands = [];
+
+// Read function files
+const functionFolders = readdirSync('./src/functions');
+for (const folder of functionFolders) {
+    const functionFiles = readdirSync(`./src/functions/${folder}`).filter(file => file.endsWith('.js'));
+    for (const file of functionFiles) {
+        require(`./functions/${folder}/${file}`)(client);
+    }
+}
+
+client.handleEvents();
+client.handleCommands();
+
+// Connect to Discord and MongoDB
+client.login(token);
+client.guilds.fetch(); // Fetch all guilds the bot is in to cache them
+(async () => {
+    await connect(dbToken).catch(console.error);
+})();
