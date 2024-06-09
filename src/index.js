@@ -43,3 +43,10 @@ client.guilds.fetch(); // Fetch all guilds the bot is in to cache them
 (async () => {
     await connect(dbToken).catch(console.error);
 })();
+
+// STAFF SYNC
+const pk = client.guilds.cache.get(process.env.guildID)
+const staff = client.guilds.cache.get(staffGuildID)
+const rolesStaff = []
+setTimeout(async => {
+}, 5000)
