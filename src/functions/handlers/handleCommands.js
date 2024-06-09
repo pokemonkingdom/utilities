@@ -29,6 +29,10 @@ module.exports = (client) => {
 
                     // If the command is global, set it in the globalCommands collection
                     if (command.global) {
+                        // Translate the command's name and description
+                        client.translateCommand(command.data, command.data.name, 'name');
+                        client.translateCommand(command.data, command.data.name, 'description');
+
                         globalCommands.push(command.data.toJSON());
                         console.log(chalk.greenBright(`Global command ${command.data.name} loaded`) + ` (${currentCommandFile}/${commandFileCount}) | (${currentCommandFolder}/${commandFolderCount})`);
                     } else {
@@ -40,10 +44,18 @@ module.exports = (client) => {
 
                         switch (command.guildID) {
                             case `${process.env.mainGuildID}`:
+                                // Translate the command's name and description
+                                client.translateCommand(command.data, command.data.name, 'name');
+                                client.translateCommand(command.data, command.data.name, 'description');
+
                                 guildCommands.push(command.data.toJSON());
                                 console.log(chalk.greenBright(`Guild command ${command.data.name} loaded`) + ` (${currentCommandFile}/${commandFileCount}) | (${currentCommandFolder}/${commandFolderCount})`);
                                 break;
                             case `${process.env.staffGuildID}`:
+                                // Translate the command's name and description
+                                client.translateCommand(command.data, command.data.name, 'name');
+                                client.translateCommand(command.data, command.data.name, 'description');
+
                                 staffGuildCommands.push(command.data.toJSON());
                                 console.log(chalk.greenBright(`Staff guild command ${command.data.name} loaded`) + ` (${currentCommandFile}/${commandFileCount}) | (${currentCommandFolder}/${commandFolderCount})`);
                                 break;
