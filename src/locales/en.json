@@ -2,7 +2,7 @@
     "commands": {
         "ping": {
             "name": "ping",
-            "description": "Check the bot's latency.",
+            "description": "Check the bot's latency",
             "options": [],
             "response": {
                 "title": "Pong!",
@@ -21,7 +21,7 @@
         },
         "help": {
             "name": "help",
-            "description": "Get help with the bot.",
+            "description": "Get help with using the bot",
             "options": [],
             "response": {
                 "title": "Help",
@@ -52,7 +52,7 @@
         },
         "invite": {
             "name": "invite",
-            "description": "Invite the bot to your server.",
+            "description": "Invite the bot to your server",
             "options": [],
             "response": {
                 "title": "Invite",
@@ -89,7 +89,7 @@
         },
         "support": {
             "name": "support",
-            "description": "Get the bot's support server.",
+            "description": "Get the bot's support server",
             "options": [],
             "response": {
                 "title": "Support",
