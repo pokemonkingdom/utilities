@@ -28,23 +28,23 @@
                 "fields": [
                     {
                         "name": "Commando's",
-                        "value": "Gebruik /commands om de lijst met commando's te bekijken."
+                        "value": "Gebruik `/commands` om de lijst met commando's te bekijken."
                     },
                     {
                         "name": "Ondersteuning",
-                        "value": "Gebruik /support om hulp te krijgen."
+                        "value": "Gebruik `/support` om hulp te krijgen."
                     },
                     {
                         "name": "Uitnodiging",
-                        "value": "Gebruik /invite om de bot uit te nodigen op je server."
+                        "value": "Gebruik `/invite` om de bot uit te nodigen op je server."
                     },
                     {
                         "name": "Statistieken",
-                        "value": "Gebruik /stats om de statistieken van de bot te bekijken."
+                        "value": "Gebruik `/stats` om de statistieken van de bot te bekijken."
                     },
                     {
                         "name": "Uptime",
-                        "value": "Gebruik /uptime om de uptime van de bot te bekijken."
+                        "value": "Gebruik `/uptime` om de uptime van de bot te bekijken."
                     }
                 ],
                 "footer": "Aangevraagd door %user%"

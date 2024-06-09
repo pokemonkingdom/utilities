@@ -28,23 +28,23 @@
                 "fields": [
                     {
                         "name": "Commandes",
-                        "value": "Pour voir la liste des commandes, utilisez /commands."
+                        "value": "Pour voir la liste des commandes, utilisez `/commands`."
                     },
                     {
                         "name": "Support",
-                        "value": "Pour obtenir de l'aide, utilisez /support."
+                        "value": "Pour obtenir de l'aide, utilisez `/support`."
                     },
                     {
                         "name": "Invitation",
-                        "value": "Pour inviter le bot dans votre serveur, utilisez /invite."
+                        "value": "Pour inviter le bot dans votre serveur, utilisez `/invite`."
                     },
                     {
                         "name": "Statistiques",
-                        "value": "Pour voir les statistiques du bot, utilisez /stats."
+                        "value": "Pour voir les statistiques du bot, utilisez `/stats`."
                     },
                     {
                         "name": "Activité",
-                        "value": "Pour voir l'activité du bot, utilisez /uptime."
+                        "value": "Pour voir l'activité du bot, utilisez `/uptime`."
                     }
                 ],
                 "footer": "Demandé par %user%"
