@@ -1,0 +1,123 @@
+{
+    "commands": {
+        "ping": {
+            "name": "ping",
+            "description": "Check de latentie van de bot.",
+            "options": [],
+            "response": {
+                "title": "Pong!",
+                "fields": [
+                    {
+                        "name": "Bot latentie",
+                        "value": "%ping%ms"
+                    },
+                    {
+                        "name": "API latentie",
+                        "value": "%apiPing%ms"
+                    }
+                ],
+                "footer": "Aangevraagd door %user%"
+            }
+        },
+        "help": {
+            "name": "help",
+            "description": "Hulp voor de bot.",
+            "options": [],
+            "response": {
+                "title": "Hulp",
+                "fields": [
+                    {
+                        "name": "Commando's",
+                        "value": "Gebruik /commands om de lijst met commando's te bekijken."
+                    },
+                    {
+                        "name": "Ondersteuning",
+                        "value": "Gebruik /support om hulp te krijgen."
+                    },
+                    {
+                        "name": "Uitnodiging",
+                        "value": "Gebruik /invite om de bot uit te nodigen op je server."
+                    },
+                    {
+                        "name": "Statistieken",
+                        "value": "Gebruik /stats om de statistieken van de bot te bekijken."
+                    },
+                    {
+                        "name": "Uptime",
+                        "value": "Gebruik /uptime om de uptime van de bot te bekijken."
+                    }
+                ],
+                "footer": "Aangevraagd door %user%"
+            }
+        },
+        "invite": {
+            "name": "invite",
+            "description": "Nodig de bot uit op je server.",
+            "options": [],
+            "response": {
+                "title": "Uitnodiging",
+                "description": "Je kunt de bot uitnodigen op je server door hier te klikken.",
+                "footer": "Aangevraagd door %user%"
+            }
+        },
+        "stats": {
+            "name": "stats",
+            "description": "Bekijk de statistieken van de bot.",
+            "options": [],
+            "response": {
+                "title": "Statistieken",
+                "fields": [
+                    {
+                        "name": "Servers",
+                        "value": "%guilds%"
+                    },
+                    {
+                        "name": "Gebruikers",
+                        "value": "%users%"
+                    },
+                    {
+                        "name": "Commando's",
+                        "value": "%commands%"
+                    },
+                    {
+                        "name": "Uptime",
+                        "value": "%uptime%"
+                    }
+                ],
+                "footer": "Aangevraagd door %user%"
+            }
+        },
+        "support": {
+            "name": "support",
+            "description": "Krijg ondersteuning voor de bot.",
+            "options": [],
+            "response": {
+                "title": "Ondersteuning",
+                "description": "Je kunt de ondersteuningsserver van de bot joinen door hier te klikken.",
+                "footer": "Aangevraagd door %user%"
+            }
+        },
+        "uptime": {
+            "name": "uptime",
+            "description": "Bekijk de uptime van de bot.",
+            "options": [],
+            "response": {
+                "title": "Uptime",
+                "description": "De bot is actief geweest voor %uptime%.",
+                "footer": "Aangevraagd door %user%"
+            }
+        }
+    },
+    "error_embed": {
+        "title": "Fout",
+        "description": "Er is een fout opgetreden bij het uitvoeren van het commando, de fout staat hieronder. Stuur deze melding naar de ontwikkelaar van de bot. Bedankt!",
+        "message": "Foutmelding",
+        "stack": "Stack",
+        "err_int_ch_input": "Fout in het commando %commandName%",
+        "err_int_btn": "Fout in de knop %customId%",
+        "err_int_slct": "Fout in de dropdown %customId%",
+        "err_int_ctx": "Fout in het contextmenu %customId%",
+        "err_int_mod": "Fout in de modal %customId%",
+        "err_int_aut": "Fout in de autocompletion %customId%"
+    }
+}

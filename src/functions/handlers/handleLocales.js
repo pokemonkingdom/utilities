@@ -41,9 +41,12 @@ module.exports = (client) => {
         // Get the parent language if the locale is a specific region
         locale = getParentLanguage(locale);
 
+        // Get the locale translations
+        const localeTranslations = locales[locale];
+        if (!localeTranslations) return null;
         // Get the category translations
-        const categoryTranslations = locales[locale][category];
-        if (!categoryTranslations) return `Category ${category} not found for locale ${locale}`;
+        const categoryTranslations = localeTranslations[category];
+        if (!categoryTranslations) return null;
 
         // Split key into nested levels
         const nestedKeys = key.split(/\.|\[/);
@@ -59,7 +62,7 @@ module.exports = (client) => {
                 translation = translation[trimmedKey];
             }
 
-            if (!translation) return `Key ${trimmedKey} not found in category ${category} for locale ${locale}`;
+            if (!translation) return null;
         }
 
         // Replace placeholders in the translation
@@ -69,6 +72,40 @@ module.exports = (client) => {
         });
 
         return translatedText;
+    }
+
+    client.translateCommand = async (data, command, attribute) => {
+        const chalkInstance = await import('chalk');
+        const chalk = chalkInstance.default;
+
+        // Create array of possible locales that Discord uses
+        const locales = ['id', 'da', 'de', 'en-GB', 'en-US', 'es-ES', 'es-419', 'fr', 'hr', 'it', 'lt', 'hu', 'nl', 'no', 'pl', 'pt-BR', 'ro', 'fi', 'sv-SE', 'vi', 'tr', 'cs', 'el', 'bg', 'ru', 'uk', 'hi', 'th', 'zh-CN', 'ja', 'zh-TW', 'ko'];
+
+        const translations = {}
+
+        // Iterate through each locale
+        for (const locale of locales) {
+            const translation = client.translate(locale, 'commands', `${command}.${attribute}`);
+            if (translation) {
+                translations[locale] = translation;
+            }
+        }
+
+        if (attribute === 'name') {
+            try {
+                data.setNameLocalizations(translations);                
+            } catch (e) {
+                console.log(chalk.redBright(`[Command Handler] Error setting name localizations for ${command}`));
+                console.error(e);
+            }
+        } else if (attribute === 'description') {
+            try {
+                data.setDescriptionLocalizations(translations);
+            } catch (e) {
+                console.log(chalk.redBright(`[Command Handler] Error setting description localizations for ${command}`));
+                console.error(e);
+            }
+        }
     }
 }
 
