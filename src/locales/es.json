@@ -117,7 +117,7 @@
         "err_int_btn": "Error en botón %customId%",
         "err_int_slct": "Error en menú desplegable %customId%",
         "err_int_ctx": "Error en menú contextual %customId%",
-        "err_int_mod": "Error en módulo %moduleName%",
+        "err_int_mod": "Error en modal %customId%",
         "err_int_aut": "Error en autocompletado %customId%"
     }
 }
