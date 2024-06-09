@@ -20,12 +20,22 @@ const functionFolders = readdirSync('./src/functions');
 for (const folder of functionFolders) {
     const functionFiles = readdirSync(`./src/functions/${folder}`).filter(file => file.endsWith('.js'));
     for (const file of functionFiles) {
-        require(`./functions/${folder}/${file}`)(client);
+        try {
+            const func = require(`./functions/${folder}/${file}`);
+            if (typeof func === 'function') {
+                func(client);
+            } else {
+                console.error(`Error: Required file ${file} in ${folder} is not exporting a function!`)
+            }
+        } catch (e) {
+            console.error(`Error requiring file ${file} in ${folder}: ${e}`);
+        }
     }
 }
 
 client.handleEvents();
 client.handleCommands();
+client.handleLocales();
 
 // Connect to Discord and MongoDB
 client.login(token);

@@ -1,0 +1,123 @@
+{
+    "commands": {
+        "ping": {
+            "name": "ping",
+            "description": "Comprobar la latencia del bot.",
+            "options": [],
+            "response": {
+                "title": "Pong!",
+                "fields": [
+                    {
+                        "name": "Latencia del bot",
+                        "value": "%ping%ms"
+                    },
+                    {
+                        "name": "Latencia de la API",
+                        "value": "%apiPing%ms"
+                    }
+                ],
+                "footer": "Solicitado por %user%"
+            }
+        },
+        "help": {
+            "name": "help",
+            "description": "Ayuda del bot.",
+            "options": [],
+            "response": {
+                "title": "Ayuda",
+                "fields": [
+                    {
+                        "name": "Comandos",
+                        "value": "Para ver la lista de comandos, usa `/commands`."
+                    },
+                    {
+                        "name": "Soporte",
+                        "value": "Para obtener soporte, usa `/support`."
+                    },
+                    {
+                        "name": "Invitación",
+                        "value": "Para invitar al bot a tu servidor, usa `/invite`."
+                    },
+                    {
+                        "name": "Estadísticas",
+                        "value": "Para ver las estadísticas del bot, usa `/stats`."
+                    },
+                    {
+                        "name": "Actividad",
+                        "value": "Para ver la actividad del bot, usa `/uptime`."
+                    }
+                ],
+                "footer": "Solicitado por %user%"
+            }
+        },
+        "invite": {
+            "name": "invite",
+            "description": "Invitar al bot a tu servidor.",
+            "options": [],
+            "response": {
+                "title": "Invitar",
+                "description": "Puedes invitar al bot a tu servidor pulsando [aquí](%inviteLink%).",
+                "footer": "Solicitado por %user%"
+            }
+        },
+        "stats": {
+            "name": "stats",
+            "description": "Obten las estadísticas del bot.",
+            "options": [],
+            "response": {
+                "title": "Estadísticas",
+                "fields": [
+                    {
+                        "name": "Servidores",
+                        "value": "%guilds%"
+                    },
+                    {
+                        "name": "Usuarios",
+                        "value": "%users%"
+                    },
+                    {
+                        "name": "Comandos",
+                        "value": "%commands%"
+                    },
+                    {
+                        "name": "Actividad",
+                        "value": "%uptime%"
+                    }
+                ],
+                "footer": "Solicitado por %user%"
+            }
+        },
+        "support": {
+            "name": "support",
+            "description": "Obtén el servidor de soporte del bot.",
+            "options": [],
+            "response": {
+                "title": "Soporte",
+                "description": "Puedes unirte al servidor de soporte del bot pulsando [aquí](%supportLink%).",
+                "footer": "Solicitado por %user%"
+            }
+        },
+        "uptime": {
+            "name": "uptime",
+            "description": "Obtén la actividad del bot.",
+            "options": [],
+            "response": {
+                "title": "Actividad",
+                "description": "El bot ha estado activo durante %uptime%.",
+                "footer": "Solicitado por %user%"
+            }
+        }
+    },
+    "error_embed": {
+        "title": "Error",
+        "description": "Ha ocurrido un error al ejecutar el comando, bajo este mensaje se encuentra el error. Por favor, envía este mensaje al desarrollador del bot. ¡Gracias!",
+        "message": "Mensaje de error",
+        "stack": "Pila",
+        "err_int_ch_input": "Error en comando %commandName%",
+        "err_int_btn": "Error en botón %customId%",
+        "err_int_slct": "Error en menú desplegable %customId%",
+        "err_int_ctx": "Error en menú contextual %customId%",
+        "err_int_mod": "Error en módulo %moduleName%",
+        "err_int_aut": "Error en autocompletado %customId%"
+    }
+}

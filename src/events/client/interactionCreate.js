@@ -3,7 +3,6 @@ const { InteractionType, EmbedBuilder } = require('discord.js');
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction, client) {
-        
         if (interaction.isChatInputCommand()) {
             chatInputCommand(interaction, client);
         } else if (interaction.isButton()) {
