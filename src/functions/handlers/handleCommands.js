@@ -24,7 +24,9 @@ module.exports = (client) => {
 
             for (const file of commandFiles) {
                 try {
-                    const command = require(`../../commands/${folder}/${file}`);
+                    const command = await require(`../../commands/${folder}/${file}`);
+                    console.log('Command loaded');
+                    console.log(command);
                     commands.set(command.data.name, command);
 
                     // If the command is global, set it in the globalCommands collection

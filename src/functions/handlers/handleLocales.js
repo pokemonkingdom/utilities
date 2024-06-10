@@ -9,6 +9,8 @@ const languageMapping = {
     'es-419': 'es'
 };
 
+const discordLocales = ['id', 'da', 'de', 'en-GB', 'en-US', 'es-ES', 'es-419', 'fr', 'hr', 'it', 'lt', 'hu', 'nl', 'no', 'pl', 'pt-BR', 'ro', 'fi', 'sv-SE', 'vi', 'tr', 'cs', 'el', 'bg', 'ru', 'uk', 'hi', 'th', 'zh-CN', 'ja', 'zh-TW', 'ko'];
+
 const locales = {};
 const commandDescriptions = {};
 
@@ -50,20 +52,8 @@ module.exports = (client) => {
 
         // Split key into nested levels
         const nestedKeys = key.split(/\.|\[/);
-        let translation = categoryTranslations;
-        for (const key of nestedKeys) {
-            const trimmedKey = key.replace(']', '');
-
-            if (Array.isArray(translation)) {
-                // Check if key is a number
-                const index = parseInt(trimmedKey);
-                translation = translation[index];
-            } else {
-                translation = translation[trimmedKey];
-            }
-
-            if (!translation) return null;
-        }
+        const translation = getNestedTranslation(categoryTranslations, nestedKeys);
+        if (!translation) return null;
 
         // Replace placeholders in the translation
         let translatedText = translation;
@@ -74,17 +64,33 @@ module.exports = (client) => {
         return translatedText;
     }
 
+    const getNestedTranslation = (translations, nestedKeys) => {
+        let translation = translations;
+        for (const key of nestedKeys) {
+            const trimmedKey = key.replace(']', '');
+            if (Array.isArray(translation)) {
+                const index = parseInt(trimmedKey);
+                translation = translation[index];
+            } else {
+                translation = translation[trimmedKey];
+            }
+
+            if (!translation) return null;
+        }
+
+        return translation;
+    }
+
     client.translateCommand = async (data, command, attribute) => {
         const chalkInstance = await import('chalk');
         const chalk = chalkInstance.default;
 
-        // Create array of possible locales that Discord uses
-        const locales = ['id', 'da', 'de', 'en-GB', 'en-US', 'es-ES', 'es-419', 'fr', 'hr', 'it', 'lt', 'hu', 'nl', 'no', 'pl', 'pt-BR', 'ro', 'fi', 'sv-SE', 'vi', 'tr', 'cs', 'el', 'bg', 'ru', 'uk', 'hi', 'th', 'zh-CN', 'ja', 'zh-TW', 'ko'];
+        console.log(chalk.greenBright(`Translating ${command}.${attribute}`));
 
         const translations = {}
 
         // Iterate through each locale
-        for (const locale of locales) {
+        for (const locale of discordLocales) {
             const translation = client.translate(locale, 'commands', `${command}.${attribute}`);
             if (translation) {
                 translations[locale] = translation;
@@ -93,7 +99,7 @@ module.exports = (client) => {
 
         if (attribute === 'name') {
             try {
-                data.setNameLocalizations(translations);                
+                data.setNameLocalizations(translations);
             } catch (e) {
                 console.log(chalk.redBright(`[Command Handler] Error setting name localizations for ${command}`));
                 console.error(e);
