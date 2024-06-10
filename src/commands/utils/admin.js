@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField } = require('discord.js');
-const schema = require('../../schemas/staffRoles.js')
+const schemaPK = require('../../schemas/pkServer.js')
+const schemaPKStaff = require('../../schemas/staffServer.js')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('admin')
@@ -78,26 +79,26 @@ module.exports = {
                 const servidor = await interaction.options.getString('servidor')
                 if(servidor === 'pk') {
                     if(interaction.guild.id !== process.env.guildID) return await interaction.reply({ content: `Ejecuta en el servidor correcto, es decir Pokémon Kingdom`})
-                    const data = await schema.findOne({ Servidor: process.env.guildID })
+                    const data = await schemaPK.findOne({ idservidor: process.env.guildID })
                     if(!data) {
-                        await schema.create({
-                            Servidor: interaction.guild.id,
-                            Monarca: monarca.id,
-                            Duque: duque.id,
-                            ConsejeroReal: consejeroreal.id,
-                            GuardaReal: guardareal.id,
-                            EscuderoReal:escuderoreal.id,
-                            BufonReal: bufonreal.id,
+
+                        const rolesStaff = [
+                        { nombre: monarca.name, id: monarca.id },
+                        { nombre: duque.name, id: duque.id },
+                        { nombre: consejeroreal.name, id: consejeroreal.id },
+                        { nombre: guardareal.name, id: guardareal.id },
+                        { nombre: escuderoreal.name, id: escuderoreal.id },
+                        { nombre: bufonreal.name, id: bufonreal.id },
+                        ];
+                        
+                        await schemaPK.create({
+                            idservidor: interaction.guild.id,
+                            nombreservidor: interaction.guild.name,
+                            rolesStaff,
                         })
                         await interaction.reply({ content: `Se han guardado los datos de **${interaction.guild.name}**`})
                     } else if(data) {
-                        data.Monarca = monarca.id
-                        data.Duque = duque.id
-                        data.ConsejeroReal = consejeroreal.id
-                        data.GuardaReal = guardareal.id
-                        data.EscuderoReal = escuderoreal.id
-                        data.BufonReal = bufonreal.id
-                        await data.save()
+                        //
                         await interaction.reply({ content: `Se ha editado los roles en la base de datos, estos roles son los que se han configurado en el servidor **${interaction.guild.name}**`})
                     }
                 } 
