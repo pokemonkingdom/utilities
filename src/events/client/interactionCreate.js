@@ -7,7 +7,7 @@ module.exports = {
             chatInputCommand(interaction, client);
         } else if (interaction.isButton()) {
             button(interaction, client);
-        } else if (interaction.isSelectMenu()) {
+        } else if (interaction.isStringSelectMenu()) {
             selectMenu(interaction, client);
         } else if (interaction.isContextMenuCommand()) {
             contextMenu(interaction, client);
@@ -181,7 +181,6 @@ async function autocomplete(interaction, client) {
             }
         );
         errorEmbed.setFooter({ text: `ERR_INT_AUT - Error in autocomplete ${commandName}`, iconURL: client.user.displayAvatarURL({ dynamic: true }) });
-        await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         return false;
     }
 }

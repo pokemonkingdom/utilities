@@ -25,8 +25,6 @@ module.exports = (client) => {
             for (const file of commandFiles) {
                 try {
                     const command = await require(`../../commands/${folder}/${file}`);
-                    console.log('Command loaded');
-                    console.log(command);
                     commands.set(command.data.name, command);
 
                     // If the command is global, set it in the globalCommands collection
@@ -70,6 +68,7 @@ module.exports = (client) => {
                     currentCommandFile++;
                 } catch (e) {
                     console.error(`Error requiring file ${file} in ${folder}: ${e}`);
+                    console.log(e);
                 }
             }
             currentCommandFolder++;

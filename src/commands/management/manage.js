@@ -2,8 +2,6 @@ const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder } = require('disc
 const translateAttribute = require('../../functions/handlers/translateAttribute');
 const guildSchema = require('../../schemas/guild');
 
-console.log('TranslateAttribute');
-console.log(translateAttribute);
 module.exports = {
     global: true,
     data: new SlashCommandBuilder()
@@ -34,7 +32,7 @@ module.exports = {
                     .setName('level')
                     .setDescription('The role level')
                     .setDescriptionLocalizations(translateAttribute('manage', 'staff.addrole.level.description'))
-                    .setRequired(true)
+                    .setRequired(false)
                 )
             )
             .addSubcommand(subcommand => subcommand
@@ -45,9 +43,7 @@ module.exports = {
                     .setName('role')
                     .setDescription('The role to remove')
                     .setDescriptionLocalizations(translateAttribute('manage', 'staff.removerole.role.description'))
-                    .addChoices(async (interaction) => {
-                        return await this.getCurrentRoleList(interaction, client);
-                    })
+                    .setAutocomplete(true)
                     .setRequired(true)
                 )
             )
@@ -122,7 +118,7 @@ module.exports = {
             )
             .addSubcommand(subcommand => subcommand
                 .setName('togglereport')
-                .setDescription('Toggle the report channel')
+                .setDescription('Toggle the report system')
                 .setDescriptionLocalizations(translateAttribute('manage', 'guild.togglereport.description'))
             )
             .addSubcommand(subcommand => subcommand
@@ -144,9 +140,7 @@ module.exports = {
                     .setName('server')
                     .setDescription('The ID of the server to unlink')
                     .setDescriptionLocalizations(translateAttribute('manage', 'guild.removelink.server.description'))
-                    .addChoices(async (interaction) => {
-                        return await this.getCurrentLinkList(interaction, client);
-                    })
+                    .setAutocomplete(true)
                     .setRequired(true)
                 )
 
@@ -157,93 +151,102 @@ module.exports = {
                 .setDescriptionLocalizations(translateAttribute('manage', 'guild.reset.description'))
             )
         ),
-    async getCurrentRoleList(interaction) {
-        const guildID = interaction.guild.id;
-        const guild = await guildSchema.findOne({ guildID });
-        const staffRoleList = guild.staffRoleList;
-        const roles = interaction.guild.roles.cache.filter(role => staffRoleList.includes(role.id));
-        const choices = roles.map(role => ({ name: role.name, value: role.id }));
-        return choices;
-    },
-    async getCurrentLinkList(interaction) {
-        const guildID = interaction.guild.id;
-        const guild = await guildSchema.findOne({ guildID });
-        const links = guild.linkedGuilds;
-        const choices = links.map(link => ({ name: link.guildName, value: link.guildID }));
-        return choices;
+    async autocomplete(interaction) {
+        const subcommandGroup = interaction.options.getSubcommandGroup().toLowerCase();
+        const subcommand = interaction.options.getSubcommand().toLowerCase();
+
+        switch (subcommandGroup) {
+            case 'staff':
+                if (subcommand === 'removerole') {
+                    const roles = await getCurrentRoleList(interaction);
+                    return interaction.respond(roles);
+                }
+                break;
+            case 'guild':
+                if (subcommand === 'removelink') {
+                    const links = await getCurrentLinkList(interaction);
+                    return interaction.respond(links);
+                }
+                break;
+            default:
+                break;
+        }
     },
     async execute(interaction, client) {
-        switch (interaction.options.getSubcommandGroup()) {
+        const subcommandGroup = interaction.options.getSubcommandGroup().toLowerCase();
+        const subcommand = interaction.options.getSubcommand().toLowerCase();
+
+        switch (subcommandGroup) {
             case 'staff':
-                switch (interaction.options.getSubcommand()) {
+                switch (subcommand) {
                     case 'addrole': {
                         const role = interaction.options.getRole('role');
                         const slug = interaction.options.getString('slug');
-                        const level = interaction.options.getInteger('level');
-                        await addRoleToStaffList(role, slug, level);
+                        const level = interaction.options.getInteger('level') || 1;
+                        await addRoleToStaffList(role, slug, level, interaction, client);
                         break;
                     }
                     case 'removerole': {
                         const role = interaction.options.getString('role');
-                        await removeRoleFromStaffList(role);
+                        await removeRoleFromStaffList(role, interaction);
                         break;
                     }
                     case 'listroles': {
-                        await listStaffRoles();
+                        await listStaffRoles(interaction);
                         break;
                     }
                 }
                 break;
             case 'guild':
-                switch (interaction.options.getSubcommand()) {
+                switch (subcommand) {
                     case 'setwelcome': {
                         const channel = interaction.options.getChannel('channel');
-                        await setWelcomeChannel(channel);
+                        await setWelcomeChannel(channel, interaction);
                         break;
                     }
                     case 'setmessagelog': {
                         const channel = interaction.options.getChannel('channel');
-                        await setMessageLogChannel(channel);
+                        await setMessageLogChannel(channel, interaction);
                         break;
                     }
                     case 'setmodlog': {
                         const channel = interaction.options.getChannel('channel');
-                        await setModLogChannel(channel);
+                        await setModLogChannel(channel, interaction);
                         break;
                     }
                     case 'setreport': {
                         const channel = interaction.options.getChannel('channel');
-                        await setReportChannel(channel);
+                        await setReportChannel(channel, interaction);
                         break;
                     }
                     case 'togglewelcome': {
-                        await toggleWelcomeMessage();
+                        await toggleWelcomeMessage(interaction);
                         break;
                     }
                     case 'togglemessagelog': {
-                        await toggleMessageLog();
+                        await toggleMessageLog(interaction);
                         break;
                     }
                     case 'togglemodlog': {
-                        await toggleModLog();
+                        await toggleModLog(interaction);
                         break;
                     }
                     case 'togglereport': {
-                        await toggleReportChannel();
+                        await toggleReportChannel(interaction);
                         break;
                     }
                     case 'addlink': {
                         const server = interaction.options.getString('server');
-                        await addServerLink(server);
+                        await addServerLink(server, interaction);
                         break;
                     }
                     case 'removelink': {
                         const server = interaction.options.getString('server');
-                        await removeServerLink(server);
+                        await removeServerLink(server, interaction);
                         break;
                     }
                     case 'reset': {
-                        await resetServerSettings();
+                        await resetServerSettings(interaction);
                         break;
                     }
                     default:
@@ -253,36 +256,81 @@ module.exports = {
             default:
                 break;
         };
-    },
+    }
 };
+
+async function getCurrentLinkList(interaction) {
+    const guildID = interaction.guild.id;
+    const guild = await guildSchema.findOne({ guildID });
+    const links = guild.linkedGuilds;
+    const choices = links.map(link => ({ name: link.guildID, value: link.guildID }));
+    return choices;
+}
+
+async function getCurrentRoleList(interaction) {
+    const guildID = interaction.guild.id;
+    const guild = await guildSchema.findOne({ guildID });
+    const staffRoleList = guild.staffRoleList;
+
+    // Get the role names from the guild document
+    const roles = await interaction.guild.roles.fetch();
+
+    const choices = staffRoleList.map(staffRole => {
+        const role = roles.get(staffRole.roleID);
+        if (!role) return { name: `[DELETED] ${staffRole.name}`, value: staffRole.roleID };
+        return { name: role.name, value: role.id };
+    });
+    return choices;
+}
 
 /**
  * Add a role to the staff list
  * @param {*} role Role to add
  * @param {*} slug Slug of the role
  * @param {*} level Level of the role
+ * @param {*} interaction The interaction object
  * @returns If the role was added successfully
  */
-async function addRoleToStaffList(role, slug, level) {
+async function addRoleToStaffList(role, slug, level, interaction, client) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
-    // Check if the role is already in the staff list
-    if (guild.staffRoleList.includes(role.id)) {
-        await interaction.reply({ content: 'Role is already in the staff list', ephemeral: true });
+    // Check if the schema exists
+    if (!guild) {
+        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
         return false;
     }
 
-    // Normalize the slug
-    slug = slug.toLowerCase();
-    // Only allow alphanumeric characters and hyphens
-    slug = slug.replace(/[^a-z0-9-]/g, '');
+    // Skip if the role is already in the staff list
+    for (const role of guild.staffRoleList) {
+        if (role.roleID === role.id) {
+            await interaction.reply({ content: 'Role is already in the staff list!', ephemeral: true });
+            return false;
+        }
+    }
 
-    // Check if there's already a role with the same slug
-    const existingRole = Object.values(guild.staffRoles).find(staffRole => staffRole.slug === slug);
-    if (existingRole) {
-        await interaction.reply({ content: 'A role with the same slug already exists', ephemeral: true });
+    // Normalize the slug
+    slug = slug
+        .toLowerCase()
+        .replace(/\s+|_+/g, '-')    // /\s+ 1 or more spaces, _+ 1 or more underscores; replace with hyphen (-)
+        .replace(/^-+\-+$/g, '')    // /^-+ 1 or more hyphens at the start, -+$ 1 or more hyphens at the end; replace with empty string
+        .replace(/[^a-z0-9-]/g, '') // /[^a-z0-9-] any character that is not a-z, 0-9, or hyphen; replace with empty string
+        .replace(/-+/g, '-');       // /-+ 1 or more hyphens; replace with hyphen
+    // Thanks Jeremy for the regex classes from LCIS! ~Bartolumiu
+
+    // Skip if the slug is empty
+    if (!slug) {
+        await interaction.reply({ content: 'Slug cannot be empty!', ephemeral: true });
         return false;
+    }
+
+    // Check if the slug is already in use
+    for (const dbRole of guild.staffRoleList) {
+        if (dbRole.name === slug) {
+            const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[0].response.slug_in_use', { role: role, roleName: role.name, roleID: role.id, slug: slug, dbRoleID: dbRole.roleID })
+            await interaction.reply({ content: content, ephemeral: true, allowedMentions: { repliedUser: false, roleMention: false } });
+            return false;
+        }
     }
 
     // Check if the level is valid
@@ -291,15 +339,15 @@ async function addRoleToStaffList(role, slug, level) {
         return false;
     }
 
-    // Check if the level is already in use
-    const existingLevel = Object.values(guild.staffRoles).find(staffRole => staffRole.level === level);
-    if (existingLevel) {
-        // Increment the level of each role with a level greater than or equal to the new level
-        Object.values(guild.staffRoles).forEach(staffRole => {
-            if (staffRole.level >= level) {
-                staffRole.level++;
-            }
-        });
+    // Increment the level of each role with a level greater than or equal to the new level
+    for (const staffRole of guild.staffRoleList) {
+        console.log(staffRole.level, level)
+        if (staffRole.level >= level) {
+            staffRole.level++;
+            // Overwrite the existing role with the updated level
+            guild.staffRoleList = guild.staffRoleList.filter(role => role.roleID !== staffRole.roleID);
+            guild.staffRoleList.push(staffRole);
+        }
     }
 
     // If the level is higher than the amount of roles, set it to the amount of roles + 1
@@ -314,16 +362,17 @@ async function addRoleToStaffList(role, slug, level) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Role added', ephemeral: true });
+    await interaction.reply({ content: `Role ${role} added`, ephemeral: true });
     return true;
 }
 
 /**
  * Remove a role from the staff list
  * @param {*} role The role to remove
+ * @param {*} interaction The interaction object
  * @returns If the role was removed successfully
  */
-async function removeRoleFromStaffList(role) {
+async function removeRoleFromStaffList(role, interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -333,48 +382,64 @@ async function removeRoleFromStaffList(role) {
         return false;
     }
 
+
     // Check if the role is in the staff list
-    if (!guild.staffRoleList.includes(role.id)) {
-        await interaction.reply({ content: 'Role is not in the staff list', ephemeral: true });
-        return false;
-    }
+    for (const staffRole of guild.staffRoleList) {
+        console.log(staffRole.roleID, role)
+        if (staffRole.roleID === role) {
+            console.log('Role found')
+            // Remove the role from the list and decrement the levels of the other roles
+            const level = staffRole.level;
+            console.log('Level:', level)
+            guild.staffRoleList = guild.staffRoleList.filter(staffRole => staffRole.roleID !== role);
+            Object.values(guild.staffRoleList).forEach(staffRole => {
+                if (staffRole.level > level) {
+                    staffRole.level--;
+                }
+            });
 
-    // Remove the role from the list and modify the levels of the other roles
-    const staffRole = guild.staffRoles[role.id];
-    const level = staffRole.level;
-    guild.staffRoleList = guild.staffRoleList.filter(staffRole => staffRole.roleID !== role.id);
-    delete guild.staffRoles[role.id];
-    Object.values(guild.staffRoles).forEach(staffRole => {
-        if (staffRole.level > level) {
-            staffRole.level--;
+            // Save the guild document
+            await guild.save();
+
+            await interaction.reply({ content: `Role ${staffRole.name} removed`, ephemeral: true });
+            return true;
         }
-    });
-
-    // Save the guild document
-    await guild.save();
-
-    await interaction.reply({ content: 'Role removed', ephemeral: true });
-    return true;
+    }
+    return false;
 }
 
 /**
  * List all staff roles
+ * @param {*} interaction The interaction object
  */
-async function listStaffRoles() {
+async function listStaffRoles(interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
-    const staffRoles = guild.staffRoles;
-    const roles = Object.values(staffRoles).sort((a, b) => a.level - b.level);
-    const roleList = roles.map(role => `${role.level}. ${role.name}`);
-    await interaction.reply({ content: roleList.join('\n'), ephemeral: true });
+    const staffRoles = guild.staffRoleList;
+
+    // Sort the roles by level
+    // Highest level first
+    staffRoles.sort((a, b) => b.level - a.level);
+
+    // Get the role names from the guild document
+    const roles = await interaction.guild.roles.fetch();
+
+    // Create a list of roles with their levels
+    const roleList = staffRoles.map(staffRole => {
+        const role = roles.get(staffRole.roleID);
+        if (!role) return `${staffRole.name} (ROLE NOT FOUND)\n> Position: ${staffRole.level}\n> Slug: ${staffRole.name}\n> ID: ${staffRole.roleID}`;
+        return `${role.name} (${role})\n> Position: ${staffRole.level}\n> Slug: ${staffRole.name}\n> ID: ${role.id}\n> Users with the role: ${role.members.size}`;
+    });
+    await interaction.reply({ content: roleList.join('\n'), ephemeral: true, allowedMentions: { repliedUser: false, roleMention: false }});
 }
 
 /**
  * Set the welcome channel
  * @param {*} channel The welcome channel
+ * @param {*} interaction The interaction object
  * @returns If the channel was set successfully
  */
-async function setWelcomeChannel(channel) {
+async function setWelcomeChannel(channel, interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -397,9 +462,10 @@ async function setWelcomeChannel(channel) {
 /**
  * Set the message log channel
  * @param {*} channel The message log channel
+ * @param {*} interaction The interaction object
  * @returns If the channel was set successfully
  */
-async function setMessageLogChannel(channel) {
+async function setMessageLogChannel(channel, interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -422,9 +488,10 @@ async function setMessageLogChannel(channel) {
 /**
  * Set the moderation log channel
  * @param {*} channel The moderation log channel
+ * @param {*} interaction The interaction object
  * @returns If the channel was set successfully
  */
-async function setModLogChannel(channel) {
+async function setModLogChannel(channel, interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -447,9 +514,10 @@ async function setModLogChannel(channel) {
 /**
  * Set the report channel
  * @param {*} channel The report channel
+ * @param {*} interaction The interaction object
  * @returns If the channel was set successfully
  */
-async function setReportChannel(channel) {
+async function setReportChannel(channel, interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -471,9 +539,10 @@ async function setReportChannel(channel) {
 
 /**
  * Toggle the welcome message
+ * @param {*} interaction The interaction object
  * @returns If the welcome message was toggled successfully
  */
-async function toggleWelcomeMessage() {
+async function toggleWelcomeMessage(interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -501,9 +570,10 @@ async function toggleWelcomeMessage() {
 
 /**
  * Toggle the message log
+ * @param {*} interaction The interaction object
  * @returns If the message log was toggled successfully
  */
-async function toggleMessageLog() {
+async function toggleMessageLog(interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -531,9 +601,10 @@ async function toggleMessageLog() {
 
 /**
  * Toggle the moderation log
+ * @param {*} interaction The interaction object
  * @returns If the moderation log was toggled successfully
  */
-async function toggleModLog() {
+async function toggleModLog(interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -561,9 +632,10 @@ async function toggleModLog() {
 
 /**
  * Toggle the report channel
+ * @param {*} interaction The interaction object
  * @returns If the report channel was toggled successfully
  */
-async function toggleReportChannel() {
+async function toggleReportChannel(interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 
@@ -592,9 +664,10 @@ async function toggleReportChannel() {
 /**
  * Add a server link
  * @param {*} server The ID of the server to link
+ * @param {*} interaction The interaction object
  * @returns If the server was linked successfully
  */
-async function addServerLink(server) {
+async function addServerLink(server, interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
     const otherGuild = await guildSchema.findOne({ guildID: server });
@@ -611,10 +684,12 @@ async function addServerLink(server) {
         return false;
     }
 
-    // Check if the server is already linked
-    if (guild.linkedGuilds.includes(server)) {
-        await interaction.reply({ content: 'A link already exists!', ephemeral: true });
-        return false;
+    // Check each guild's linked servers
+    for (const link of guild.linkedGuilds) {
+        if (link.guildID === server) {
+            await interaction.reply({ content: 'A link already exists!', ephemeral: true });
+            return false;
+        }
     }
 
     // Add the server to the linked servers
@@ -634,9 +709,10 @@ async function addServerLink(server) {
 /**
  * Remove a server link
  * @param {*} server The ID of the server to unlink
+ * @param {*} interaction The interaction object
  * @returns If the server was unlinked successfully
  */
-async function removeServerLink(server) {
+async function removeServerLink(server, interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
     const otherGuild = await guildSchema.findOne({ guildID: server });
@@ -653,31 +729,31 @@ async function removeServerLink(server) {
         return false;
     }
 
-    // Check if the server is not linked
-    if (!guild.linkedGuilds.includes(server)) {
-        await interaction.reply({ content: 'There\'s no link with that server', ephemeral: true });
-        return false;
+    // Check each guild's linked servers
+    for (const link of guild.linkedGuilds) {
+        if (link.guildID === server) {
+            // Remove the server from the linked servers
+            guild.linkedGuilds = guild.linkedGuilds.filter(link => link.guildID !== server);
+
+            // Remove the current server from the other server's linked servers
+            otherGuild.linkedGuilds = otherGuild.linkedGuilds.filter(link => link.guildID !== guildID);
+
+            // Save both guild documents
+            await guild.save();
+            await otherGuild.save();
+
+            await interaction.reply({ content: 'Servers unlinked successfully', ephemeral: true });
+            return true;
+        }
     }
-
-    // Remove the server from the linked servers
-    guild.linkedGuilds = guild.linkedGuilds.filter(link => link.guildID !== server);
-
-    // Remove the current server from the other server's linked servers
-    otherGuild.linkedGuilds = otherGuild.linkedGuilds.filter(link => link.guildID !== guildID);
-
-    // Save both guild documents
-    await guild.save();
-    await otherGuild.save();
-
-    await interaction.reply({ content: 'Servers unlinked successfully', ephemeral: true });
-    return true;
+    return false;
 }
 
 /**
  * Reset the server settings
  * @returns If the server settings were reset successfully
  */
-async function resetServerSettings() {
+async function resetServerSettings(interaction) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
 

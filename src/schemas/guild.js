@@ -15,4 +15,4 @@ let guildSchema = new Schema({
     linkedGuilds: { type: Array, default: [] },
 });
 
-module.exports = model('guild', guildSchema);
+module.exports = model('guild', guildSchema, 'guilds');

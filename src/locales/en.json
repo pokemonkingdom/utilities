@@ -3,7 +3,7 @@
         "ping": {
             "name": "ping",
             "description": "Check the bot's latency",
-            "options": [],
+            "subcommands": [],
             "response": {
                 "title": "Pong!",
                 "fields": [
@@ -19,9 +19,164 @@
                 "footer": "Requested by %user%"
             }
         },
+        "manage": {
+            "name": "manage",
+            "description": "Bot management",
+            "subcommand_groups": [
+                {
+                    "name": "staff",
+                    "description": "Manage the server staff",
+                    "subcommands": [
+                        {
+                            "name": "addrole",
+                            "description": "Add a role to the staff list",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "role",
+                                    "description": "The role to add"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "already_added": "Role is already in the staff list!",
+                                "slug_empty": "Slug cannot be empty!",
+                                "slug_in_use": "Error while adding role %role%, `[%roleName% / ID: %roleID%]`\nSlug `%slug%` is already being used in role <@&%dbRoleID%>"
+                            }
+                        },
+                        {
+                            "name": "removerole",
+                            "description": "Remove a role from the staff list",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "role",
+                                    "description": "The role to remove"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "listroles",
+                            "description": "List all staff roles",
+                            "subcommands": [],
+                            "options": []
+                        }
+                    ],
+                    "options": []
+                },
+                {
+                    "name": "guild",
+                    "description": "Manage the server settings",
+                    "subcommands": [
+                        {
+                            "setwelcome": {
+                                "name": "setwelcome",
+                                "description": "Set the welcome channel",
+                                "subcommands": [],
+                                "options": [
+                                    {
+                                        "name": "channel",
+                                        "description": "The welcome channel"
+                                    }
+                                ]
+                            },
+                            "setmessagelog": {
+                                "name": "setmessagelog",
+                                "description": "Set the message log channel",
+                                "subcommands": [],
+                                "options": [
+                                    {
+                                        "name": "channel",
+                                        "description": "The message log channel"
+                                    }
+                                ]
+                            },
+                            "setmodlog": {
+                                "name": "setmodlog",
+                                "description": "Set the moderation log channel",
+                                "subcommands": [],
+                                "options": [
+                                    {
+                                        "name": "channel",
+                                        "description": "The moderation log channel"
+                                    }
+                                ]
+                            },
+                            "setreport": {
+                                "name": "setreport",
+                                "description": "Set the report channel",
+                                "subcommands": [],
+                                "options": [
+                                    {
+                                        "name": "channel",
+                                        "description": "The report channel"
+                                    }
+                                ]
+                            },
+                            "togglewelcome": {
+                                "name": "togglewelcome",
+                                "description": "Toggle the welcome message",
+                                "subcommands": [],
+                                "options": []
+                            },
+                            "togglemessagelog": {
+                                "name": "togglemessagelog",
+                                "description": "Toggle the message log",
+                                "subcommands": [],
+                                "options": []
+                            },
+                            "togglemodlog": {
+                                "name": "togglemodlog",
+                                "description": "Toggle the moderation log",
+                                "subcommands": [],
+                                "options": []
+                            },
+                            "togglereport": {
+                                "name": "togglereport",
+                                "description": "Toggle the report system",
+                                "subcommands": [],
+                                "options": []
+                            },
+                            "addlink": {
+                                "name": "addlink",
+                                "description": "Link the server to another server",
+                                "subcommands": [],
+                                "options": [
+                                    {
+                                        "name": "server",
+                                        "description": "The ID of the server to link"
+                                    }
+                                ]
+                            },
+                            "removelink": {
+                                "name": "removelink",
+                                "description": "Remove server link from another server",
+                                "subcommands": [],
+                                "options": [
+                                    {
+                                        "name": "server",
+                                        "description": "The ID of the server to unlink"
+                                    }
+                                ]
+                            },
+                            "reset": {
+                                "name": "reset",
+                                "description": "Reset the server settings",
+                                "subcommands": [],
+                                "options": []
+                            }
+                        }
+                    ]
+                }
+            ],
+            "subcommands": [],
+            "options": []
+        },
         "help": {
             "name": "help",
             "description": "Get help with using the bot",
+            "subcommand_groups": [],
+            "subcommands": [],
             "options": [],
             "response": {
                 "title": "Help",
@@ -53,6 +208,7 @@
         "invite": {
             "name": "invite",
             "description": "Invite the bot to your server",
+            "subcommands": [],
             "options": [],
             "response": {
                 "title": "Invite",
@@ -63,6 +219,7 @@
         "stats": {
             "name": "stats",
             "description": "Get the bot's stats.",
+            "subcommands": [],
             "options": [],
             "response": {
                 "title": "Stats",
@@ -90,6 +247,7 @@
         "support": {
             "name": "support",
             "description": "Get the bot's support server",
+            "subcommands": [],
             "options": [],
             "response": {
                 "title": "Support",
@@ -100,6 +258,7 @@
         "uptime": {
             "name": "uptime",
             "description": "Get the bot's uptime.",
+            "subcommands": [],
             "options": [],
             "response": {
                 "title": "Uptime",
