@@ -5,7 +5,7 @@
             "description": "Comprobar la latencia del bot.",
             "options": [],
             "response": {
-                "title": "Pong!",
+                "title": "¡Pong!",
                 "fields": [
                     {
                         "name": "Latencia del bot",
@@ -19,9 +19,121 @@
                 "footer": "Solicitado por %user%"
             }
         },
+        "manage": {
+            "name": "manage",
+            "description": "Gestión del bot",
+            "options": [],
+            "subcommand_groups": [
+                {
+                    "name": "staff",
+                    "description": "Gestionar el staff del servidor",
+                    "options": [],
+                    "subcommands": [
+                        {
+                            "name": "addrole",
+                            "description": "Añadir un rol a la lista de roles staff",
+                            "options": [
+                                {
+                                    "name": "rol",
+                                    "description": "Rol a añadir"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "Servidor no encontrado, ¡ejecuta `/setup` antes!",
+                                "already_added": "¡El rol ya estaba en la lista de roles staff!",
+                                "slug_empty": "¡El identificador no puede estar vacío!",
+                                "slug_in_use": "Error al añadir el rol %role%, `[%roleName% / ID: %roleID%]`\nEl identificador `%slug%` ya está siendo utilizado en el rol <@&%dbRoleID%>",
+                                "level_negative": "¡La posición debe ser un número positivo!",
+                                "success": "Rol %role% añadido a la lista de roles staff con posición %position% y slug `%slug%`"
+                            }
+                        },
+                        {
+                            "name": "removerole",
+                            "description": "Eliminar un rol de la lista de roles staff",
+                            "options": [
+                                {
+                                    "name": "rol",
+                                    "description": "Rol a eliminar"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "Servidor no encontrado, ¡ejecuta `/setup` antes!",
+                                "success": "Rol `%role%` eliminado de la lista de roles staff"
+                            }
+                        },
+                        {
+                            "name": "listroles",
+                            "description": "Enumerar todos los roles staff",
+                            "response": {
+                                "no_guild": "Servidor no encontrado, ¡ejecuta `/setup` antes!",
+                                "role_not_found": "%roleName% (ROL NO ENCONTRADO)\n> Posición: %position%\n> Slug: %slug%\n> ID: %roleID%",
+                                "success": "%roleName% (%role%)\n> Posición: %position%\n> Slug: %slug%\n> ID: %roleID%\n> Usuarios con el rol: %roleMemberCount%"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "servidor",
+                    "description": "Gestionar la configuración del servidor",
+                    "options": [],
+                    "subcommands": [
+                        {
+                            "name": "reset",
+                            "description": "Restablecer la configuración del servidor",
+                            "options": [
+                                {
+                                    "name": "canal",
+                                    "description": "Canal de reportes"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "Servidor no encontrado, ¡ejecuta `/setup` antes!",
+                                "success": "Configuración del servidor restablecida",
+                                "no_channel": "Canal de reportes no establecido, ¡configúralo primero con `/manage guild setreport`!",
+                                "enabled": "Sistema de reportes activado",
+                                "disabled": "Sistema de reportes desactivado"
+                            },
+                            "addlink": {
+                                "name": "addlink",
+                                "description": "Vincular el servidor a otro servidor",
+                                "options": [
+                                    {
+                                        "name": "servidor",
+                                        "description": "La ID del servidor a enlazar (servidor de staff)"
+                                    }
+                                ],
+                                "response": {
+                                    "same_server": "¡No se puede vincular el servidor a sí mismo!",
+                                    "no_guild": "El servidor actual no está en la base de datos. ¡Primero ejecuta `/setup`!",
+                                    "no_other_guild": "El servidor especificado no está en la base de datos. ¡Asegúrate de que el otro servidor tiene el bot y ha ejecutado `/setup`!",
+                                    "already_linked": "¡El servidor ya está vinculado al servidor especificado!",
+                                    "success": "Servidor vinculado al servidor con ID %server%"
+                                }
+                            },
+                            "removelink": {
+                                "name": "removelink",
+                                "description": "Eliminar enlace de servidor de otro servidor",
+                                "options": [
+                                    {
+                                        "name": "servidor",
+                                        "description": "ID del servidor a desvincular"
+                                    }
+                                ],
+                                "response": {
+                                    "no_guild": "El servidor actual no está en la base de datos. ¡Primero ejecuta `/setup`!",
+                                    "no_other_guild": "El servidor especificado no está en la base de datos. ¡Asegúrate de que el otro servidor tiene el bot y ha ejecutado `/setup`!",
+                                    "not_linked": "¡El servidor no está vinculado al servidor especificado!",
+                                    "success": "Servidor desvinculado del servidor con ID %server%"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
         "help": {
             "name": "help",
-            "description": "Ayuda del bot.",
+            "description": "Obtén ayuda para utilizar el bot",
             "options": [],
             "response": {
                 "title": "Ayuda",
@@ -52,10 +164,10 @@
         },
         "invite": {
             "name": "invite",
-            "description": "Invitar al bot a tu servidor.",
+            "description": "Invitar al bot a tu servidor",
             "options": [],
             "response": {
-                "title": "Invitar",
+                "title": "Invitar al bot",
                 "description": "Puedes invitar al bot a tu servidor pulsando [aquí](%inviteLink%).",
                 "footer": "Solicitado por %user%"
             }
@@ -89,7 +201,7 @@
         },
         "support": {
             "name": "support",
-            "description": "Obtén el servidor de soporte del bot.",
+            "description": "Obtener la invitación al servidor de soporte del bot",
             "options": [],
             "response": {
                 "title": "Soporte",
@@ -99,7 +211,7 @@
         },
         "uptime": {
             "name": "uptime",
-            "description": "Obtén la actividad del bot.",
+            "description": "Obtener la actividad del bot.",
             "options": [],
             "response": {
                 "title": "Actividad",
@@ -110,14 +222,14 @@
     },
     "internal_error_embed": {
         "title": "Error",
-        "description": "Ha ocurrido un error al ejecutar el comando, bajo este mensaje se encuentra el error. Por favor, envía este mensaje al desarrollador del bot. ¡Gracias!",
+        "description": "Ha ocurrido un error al ejecutar el comando, a continuación se muestra el mensaje de error. Por favor, envía este mensaje al desarrollador del bot. ¡Gracias!",
         "message": "Mensaje de error",
-        "stack": "Pila",
-        "err_int_ch_input": "Error en comando %commandName%",
-        "err_int_btn": "Error en botón %customId%",
-        "err_int_slct": "Error en menú desplegable %customId%",
-        "err_int_ctx": "Error en menú contextual %customId%",
-        "err_int_mod": "Error en modal %customId%",
+        "stack": "Pila de errores",
+        "err_int_ch_input": "Error en el comando %commandName%",
+        "err_int_btn": "Error en el botón %customId%",
+        "err_int_slct": "Error en el menú de selección %customId%",
+        "err_int_ctx": "Error en el comando contextual %customId%",
+        "err_int_mod": "Error en el modal %customId%",
         "err_int_aut": "Error en autocompletado %customId%"
     }
 }
