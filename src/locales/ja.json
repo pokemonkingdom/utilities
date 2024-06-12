@@ -1,0 +1,348 @@
+{
+    "commands": {
+        "ping": {
+            "name": "ping",
+            "description": "ボットのレイテンシーを確認します",
+            "subcommands": [],
+            "response": {
+                "title": "ポン！",
+                "fields": [
+                    {
+                        "name": "ボットのレイテンシー",
+                        "value": "%ping%ms"
+                    },
+                    {
+                        "name": "APIのレイテンシー",
+                        "value": "%apiPing%ms"
+                    }
+                ],
+                "footer": "%user% によるリクエスト"
+            }
+        },
+        "manage": {
+            "name": "manage",
+            "description": "ボット管理",
+            "subcommand_groups": [
+                {
+                    "name": "staff",
+                    "description": "サーバースタッフを管理します",
+                    "subcommands": [
+                        {
+                            "name": "addrole",
+                            "description": "スタッフロールリストにロールを追加します",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "role",
+                                    "description": "追加するロール"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "already_added": "ロールはすでにスタッフロールリストに追加されています！",
+                                "slug_empty": "スラグは空にできません！",
+                                "slug_in_use": "ロール %role% の追加エラー `[%roleName% / ID: %roleID%]`\nスラグ `%slug%` は既にロール <@&%dbRoleID%> に使用されています",
+                                "position_negative": "ポジションは正の数でなければなりません！",
+                                "success": "ロール %role% がポジション %position% とスラグ `%slug%` でスタッフロールリストに追加されました"
+                            }
+                        },
+                        {
+                            "name": "removerole",
+                            "description": "スタッフロールリストからロールを削除します",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "role",
+                                    "description": "削除するロール"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "success": "ロール `%role%` がスタッフロールリストから削除されました"
+                            }
+                        },
+                        {
+                            "name": "listroles",
+                            "description": "すべてのスタッフロールをリストします",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "role_not_found": "%roleName% (ロールが見つかりません)\n> ポジション: %position%\n> スラグ: %slug%\n> ID: %roleID%",
+                                "success": "%roleName% (%role%)\n> ポジション: %position%\n> スラグ: %slug%\n> ID: %roleID%\n> ロールを持つユーザー: %roleMemberCount%"
+                            }
+                        }
+                    ],
+                    "options": []
+                },
+                {
+                    "name": "guild",
+                    "description": "サーバー設定を管理します",
+                    "subcommands": [
+                        {
+                            "name": "setwelcome",
+                            "description": "ウェルカムチャンネルを設定します",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "channel",
+                                    "description": "ウェルカムチャンネル"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "success": "ウェルカムチャンネルが %channel% に設定されました"
+                            }
+                        },
+                        {
+                            "name": "setmessagelog",
+                            "description": "メッセージログチャンネルを設定します",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "channel",
+                                    "description": "メッセージログチャンネル"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "success": "メッセージログチャンネルが %channel% に設定されました"
+                            }
+                        },
+                        {
+                            "name": "setmodlog",
+                            "description": "モデレーションログチャンネルを設定します",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "channel",
+                                    "description": "モデレーションログチャンネル"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "success": "モデレーションログチャンネルが %channel% に設定されました"
+                            }
+                        },
+                        {
+                            "name": "setreport",
+                            "description": "レポートチャンネルを設定します",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "channel",
+                                    "description": "レポートチャンネル"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "success": "レポートチャンネルが %channel% に設定されました"
+                            }
+                        },
+                        {
+                            "name": "togglewelcome",
+                            "description": "ウェルカムメッセージの切り替え",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "no_channel": "ウェルカムチャンネルが設定されていません。まず `/manage guild setwelcome` を使用して設定してください！",
+                                "enabled": "ウェルカムメッセージが有効になりました",
+                                "disabled": "ウェルカムメッセージが無効になりました"
+                            }
+                        },
+                        {
+                            "name": "togglemessagelog",
+                            "description": "メッセージログの切り替え",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "no_channel": "メッセージログチャンネルが設定されていません。まず `/manage guild setmessagelog` を使用して設定してください！",
+                                "enabled": "メッセージログが有効になりました",
+                                "disabled": "メッセージログが無効になりました"
+                            }
+                        },
+                        {
+                            "name": "togglemodlog",
+                            "description": "モデレーションログの切り替え",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "no_channel": "モデレーションログチャンネルが設定されていません。まず `/manage guild setmodlog` を使用して設定してください！",
+                                "enabled": "モデレーションログが有効になりました",
+                                "disabled": "モデレーションログが無効になりました"
+                            }
+                        },
+                        {
+                            "name": "togglereport",
+                            "description": "レポートシステムの切り替え",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "no_channel": "レポートチャンネルが設定されていません。まず `/manage guild setreport` を使用して設定してください！",
+                                "enabled": "レポートシステムが有効になりました",
+                                "disabled": "レポートシステムが無効になりました"
+                            }
+                        },
+                        {
+                            "name": "addlink",
+                            "description": "サーバーを他のサーバーにリンクします",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "server",
+                                    "description": "リンクするサーバーのID（スタッフサーバー）"
+                                }
+                            ],
+                            "response": {
+                                "same_server": "サーバーを自分自身にリンクすることはできません！",
+                                "no_guild": "現在のギルドがデータベースにありません。まず `/setup` を実行してください！",
+                                "no_other_guild": "指定されたギルドはデータベースにありません。もう一方のサーバーにボットがあり、 `/setup` を実行したことを確認してください！",
+                                "already_linked": "サーバーは指定されたサーバーに既にリンクされています！",
+                                "success": "サーバーがID %server% のサーバーにリンクされました"
+                            }
+                        },
+                        {
+                            "name": "removelink",
+                            "description": "他のサーバーからサーバーリンクを解除します",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "server",
+                                    "description": "リンクを解除するサーバーのID"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "現在のギルドがデータベースにありません。まず `/setup` を実行してください！",
+                                "no_other_guild": "指定されたギルドはデータベースにありません。もう一方のサーバーにボットがあり、 `/setup` を実行したことを確認してください！",
+                                "not_linked": "サーバーは指定されたサーバーにリンクされていません！",
+                                "success": "サーバーがID %server% のサーバーからリンク解除されました"
+                            }
+                        },
+                        {
+                            "name": "reset",
+                            "description": "サーバー設定をリセットします",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "ギルドが見つかりません。まず `/setup` を実行してください！",
+                                "success": "サーバー設定がリセットされました"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "subcommands": [],
+            "options": []
+        },
+        "help": {
+            "name": "help",
+            "description": "ボットの使い方についてのヘルプを表示します",
+            "subcommand_groups": [],
+            "subcommands": [],
+            "options": [],
+            "response": {
+                "title": "ヘルプ",
+                "fields": [
+                    {
+                        "name": "コマンド",
+                        "value": "コマンドのリストを見るには、 `/commands` を使用してください。"
+                    },
+                    {
+                        "name": "サポート",
+                        "value": "サポートを受けるには、 `/support` を使用してください。"
+                    },
+                    {
+                        "name": "招待",
+                        "value": "ボットをサーバーに招待するには、 `/invite` を使用してください。"
+                    },
+                    {
+                        "name": "統計",
+                        "value": "ボットの統計を見るには、 `/stats` を使用してください。"
+                    },
+                    {
+                        "name": "稼働時間",
+                        "value": "ボットの稼働時間を見るには、 `/uptime` を使用してください。"
+                    }
+                ],
+                "footer": "%user% によるリクエスト"
+            }
+        },
+        "invite": {
+            "name": "invite",
+            "description": "ボットをサーバーに招待します",
+            "subcommands": [],
+            "options": [],
+            "response": {
+                "title": "ボットを招待",
+                "description": "ボットをサーバーに招待するには、[こちら](%inviteLink%) をクリックしてください。",
+                "footer": "%user% によるリクエスト"
+            }
+        },
+        "stats": {
+            "name": "stats",
+            "description": "ボットの統計を取得します。",
+            "subcommands": [],
+            "options": [],
+            "response": {
+                "title": "統計",
+                "fields": [
+                    {
+                        "name": "サーバー数",
+                        "value": "%guilds%"
+                    },
+                    {
+                        "name": "ユーザー数",
+                        "value": "%users%"
+                    },
+                    {
+                        "name": "コマンド数",
+                        "value": "%commands%"
+                    },
+                    {
+                        "name": "稼働時間",
+                        "value": "%uptime%"
+                    }
+                ],
+                "footer": "%user% によるリクエスト"
+            }
+        },
+        "support": {
+            "name": "support",
+            "description": "ボットのサポートサーバーの招待リンクを取得します",
+            "subcommands": [],
+            "options": [],
+            "response": {
+                "title": "サポート",
+                "description": "ボットのサポートサーバーに参加するには、[こちら](%supportLink%) をクリックしてください。",
+                "footer": "%user% によるリクエスト"
+            }
+        },
+        "uptime": {
+            "name": "uptime",
+            "description": "ボットの稼働時間を取得します。",
+            "subcommands": [],
+            "options": [],
+            "response": {
+                "title": "稼働時間",
+                "description": "ボットは %uptime% の間オンラインです。",
+                "footer": "%user% によるリクエスト"
+            }
+        }
+    },
+    "internal_error_embed": {
+        "title": "エラー",
+        "description": "このコマンドを実行中にエラーが発生しました。以下はエラーメッセージです。このエラーをボット開発者に報告してください。ありがとうございます！",
+        "message": "エラーメッセージ",
+        "stack": "エラースタックトレース",
+        "err_int_ch_input": "コマンド %commandName% のエラー",
+        "err_int_btn": "ボタン %customId% のエラー",
+        "err_int_slct": "セレクトメニュー %customId% のエラー",
+        "err_int_ctx": "コンテキストコマンド %customId% のエラー",
+        "err_int_mod": "モーダル %customId% のエラー",
+        "err_int_aut": "オートコンプリート %customId% のエラー"
+    }
+}
