@@ -108,7 +108,7 @@
             }
         }
     },
-    "error_embed": {
+    "internal_error_embed": {
         "title": "Erro",
         "description": "Ocorreu um erro ao executar o comando, abaixo está o erro. Por favor, envie esta mensagem para o desenvolvedor do bot. Obrigado!",
         "message": "Mensagem de erro",

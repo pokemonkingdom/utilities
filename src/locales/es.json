@@ -108,7 +108,7 @@
             }
         }
     },
-    "error_embed": {
+    "internal_error_embed": {
         "title": "Error",
         "description": "Ha ocurrido un error al ejecutar el comando, bajo este mensaje se encuentra el error. Por favor, envía este mensaje al desarrollador del bot. ¡Gracias!",
         "message": "Mensaje de error",

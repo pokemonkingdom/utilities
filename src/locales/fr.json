@@ -108,7 +108,7 @@
             }
         }
     },
-    "error_embed": {
+    "internal_error_embed": {
         "title": "Erreur",
         "description": "Une erreur est survenue lors de l'exécution de la commande, l'erreur est ci-dessous. Veuillez envoyer ce message au développeur du bot. Merci !",
         "message": "Message d'erreur",

@@ -108,7 +108,7 @@
             }
         }
     },
-    "error_embed": {
+    "internal_error_embed": {
         "title": "Fout",
         "description": "Er is een fout opgetreden bij het uitvoeren van het commando, de fout staat hieronder. Stuur deze melding naar de ontwikkelaar van de bot. Bedankt!",
         "message": "Foutmelding",

@@ -40,12 +40,8 @@ module.exports = (client) => {
     };
 
     client.translate = (locale, category, key, replacements = {}) => {
-        console.log(`Translating ${locale}.${category}.${key}`)
-        console.log('Replacements:', replacements)
         // Get the parent language if the locale is a specific region
         locale = getParentLanguage(locale);
-
-        console.log(`Parent language: ${locale}`)
 
         // Get the locale translations
         const localeTranslations = locales[locale];
@@ -56,10 +52,6 @@ module.exports = (client) => {
 
         // Split key into nested levels
         const nestedKeys = key.split(/\.|\[/);
-
-        console.log('Nested keys:', nestedKeys)
-        console.log('Category translations:', categoryTranslations)
-        console.log('-------------------')
 
         const translation = getNestedTranslation(categoryTranslations, nestedKeys);
         if (!translation) return null;
@@ -83,10 +75,6 @@ module.exports = (client) => {
             } else {
                 translation = translation[trimmedKey];
             }
-
-            console.log('Key:', trimmedKey)
-            console.log('Translation:', translation)
-            console.log('-------------------')
 
             if (!translation) return null;
         }

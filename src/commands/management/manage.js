@@ -29,9 +29,9 @@ module.exports = {
                     .setRequired(true)
                 )
                 .addIntegerOption(option => option
-                    .setName('level')
-                    .setDescription('The role level')
-                    .setDescriptionLocalizations(translateAttribute('manage', 'staff.addrole.level.description'))
+                    .setName('position')
+                    .setDescription('The role position')
+                    .setDescriptionLocalizations(translateAttribute('manage', 'staff.addrole.position.description'))
                     .setRequired(false)
                 )
             )
@@ -182,8 +182,8 @@ module.exports = {
                     case 'addrole': {
                         const role = interaction.options.getRole('role');
                         const slug = interaction.options.getString('slug');
-                        const level = interaction.options.getInteger('level') || 1;
-                        await addRoleToStaffList(role, slug, level, interaction, client);
+                        const position = interaction.options.getInteger('position') || 1;
+                        await addRoleToStaffList(role, slug, position, interaction, client);
                         break;
                     }
                     case 'removerole': {
@@ -287,24 +287,25 @@ async function getCurrentRoleList(interaction) {
  * Add a role to the staff list
  * @param {*} role Role to add
  * @param {*} slug Slug of the role
- * @param {*} level Level of the role
+ * @param {*} position Position of the role
  * @param {*} interaction The interaction object
  * @returns If the role was added successfully
  */
-async function addRoleToStaffList(role, slug, level, interaction, client) {
+async function addRoleToStaffList(role, slug, position, interaction, client) {
     const guildID = interaction.guild.id;
     const guild = await guildSchema.findOne({ guildID });
-
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[0].response.guild_not_found');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
     // Skip if the role is already in the staff list
     for (const role of guild.staffRoleList) {
         if (role.roleID === role.id) {
-            await interaction.reply({ content: 'Role is already in the staff list!', ephemeral: true });
+            const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[0].response.already_added');
+            await interaction.reply({ content: content, ephemeral: true });
             return false;
         }
     }
@@ -320,7 +321,8 @@ async function addRoleToStaffList(role, slug, level, interaction, client) {
 
     // Skip if the slug is empty
     if (!slug) {
-        await interaction.reply({ content: 'Slug cannot be empty!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[0].response.slug_empty');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -333,36 +335,37 @@ async function addRoleToStaffList(role, slug, level, interaction, client) {
         }
     }
 
-    // Check if the level is valid
-    if (level < 0) {
-        await interaction.reply({ content: 'Level must be a positive number', ephemeral: true });
+    // Check if the position is valid
+    if (position < 0) {
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[0].response.position_negative');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
-    // Increment the level of each role with a level greater than or equal to the new level
+    // Increment the position of each role with a position greater than or equal to the new position
     for (const staffRole of guild.staffRoleList) {
-        console.log(staffRole.level, level)
-        if (staffRole.level >= level) {
-            staffRole.level++;
-            // Overwrite the existing role with the updated level
+        if (staffRole.position >= position) {
+            staffRole.position++;
+            // Overwrite the existing role with the updated position
             guild.staffRoleList = guild.staffRoleList.filter(role => role.roleID !== staffRole.roleID);
             guild.staffRoleList.push(staffRole);
         }
     }
 
-    // If the level is higher than the amount of roles, set it to the amount of roles + 1
-    if (level > guild.staffRoleList.length) {
-        level = guild.staffRoleList.length + 1;
+    // If the position is higher than the amount of roles, set it to the amount of roles + 1
+    if (position > guild.staffRoleList.length) {
+        position = guild.staffRoleList.length + 1;
     }
 
     // Create a new staff role object
-    const staffRole = { name: slug, roleID: role.id, level: level };
+    const staffRole = { name: slug, roleID: role.id, position: position };
     guild.staffRoleList.push(staffRole);
 
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: `Role ${role} added`, ephemeral: true });
+    const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[0].response.success', { role: role, position: position, slug: slug });
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -378,30 +381,29 @@ async function removeRoleFromStaffList(role, interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[1].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
 
     // Check if the role is in the staff list
     for (const staffRole of guild.staffRoleList) {
-        console.log(staffRole.roleID, role)
         if (staffRole.roleID === role) {
-            console.log('Role found')
-            // Remove the role from the list and decrement the levels of the other roles
-            const level = staffRole.level;
-            console.log('Level:', level)
+            // Remove the role from the list and decrement the positions of the other roles
+            const position = staffRole.position;
             guild.staffRoleList = guild.staffRoleList.filter(staffRole => staffRole.roleID !== role);
             Object.values(guild.staffRoleList).forEach(staffRole => {
-                if (staffRole.level > level) {
-                    staffRole.level--;
+                if (staffRole.position > position) {
+                    staffRole.position--;
                 }
             });
 
             // Save the guild document
             await guild.save();
 
-            await interaction.reply({ content: `Role ${staffRole.name} removed`, ephemeral: true });
+            const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[1].response.success', { role: staffRole.name });
+            await interaction.reply({ content: content, ephemeral: true });
             return true;
         }
     }
@@ -417,18 +419,24 @@ async function listStaffRoles(interaction) {
     const guild = await guildSchema.findOne({ guildID });
     const staffRoles = guild.staffRoleList;
 
-    // Sort the roles by level
-    // Highest level first
-    staffRoles.sort((a, b) => b.level - a.level);
+    // Check if the schema exists
+    if (!guild) {
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[2].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
+        return;
+    }
+    // Sort the roles by position
+    // Highest position first
+    staffRoles.sort((a, b) => b.position - a.position);
 
     // Get the role names from the guild document
     const roles = await interaction.guild.roles.fetch();
 
-    // Create a list of roles with their levels
+    // Create a list of roles with their positions
     const roleList = staffRoles.map(staffRole => {
         const role = roles.get(staffRole.roleID);
-        if (!role) return `${staffRole.name} (ROLE NOT FOUND)\n> Position: ${staffRole.level}\n> Slug: ${staffRole.name}\n> ID: ${staffRole.roleID}`;
-        return `${role.name} (${role})\n> Position: ${staffRole.level}\n> Slug: ${staffRole.name}\n> ID: ${role.id}\n> Users with the role: ${role.members.size}`;
+        if (!role) return client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[2].response.role_not_found', { roleName: staffRole.name, position: staffRole.position, slug: staffRole.name, roleID: staffRole.roleID });
+        return client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[0].subcommands[2].response.success', { roleName: staffRole.name, role: role, position: staffRole.position, slug: staffRole.name, roleID: role.id, roleMemberCount: role.members.size });;
     });
     await interaction.reply({ content: roleList.join('\n'), ephemeral: true, allowedMentions: { repliedUser: false, roleMention: false }});
 }
@@ -445,7 +453,8 @@ async function setWelcomeChannel(channel, interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[0].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -455,7 +464,8 @@ async function setWelcomeChannel(channel, interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Welcome channel set', ephemeral: true });
+    const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[0].response.success', { channel: channel });
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -471,7 +481,8 @@ async function setMessageLogChannel(channel, interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[1].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -481,7 +492,8 @@ async function setMessageLogChannel(channel, interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Message log channel set', ephemeral: true });
+    const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[1].response.success', { channel: channel });
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -497,7 +509,8 @@ async function setModLogChannel(channel, interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[2].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -507,7 +520,8 @@ async function setModLogChannel(channel, interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Moderation log channel set', ephemeral: true });
+    const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[2].response.success', { channel: channel });
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -523,7 +537,8 @@ async function setReportChannel(channel, interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[3].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -533,7 +548,8 @@ async function setReportChannel(channel, interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Report channel set', ephemeral: true });
+    const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[3].response.success', { channel: channel });
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -548,13 +564,15 @@ async function toggleWelcomeMessage(interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[4].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
     // Check if a welcome channel is set
     if (!guild.welcomeChannel) {
-        await interaction.reply({ content: 'Set the welcome channel first', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[4].response.no_channel');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -564,7 +582,9 @@ async function toggleWelcomeMessage(interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Welcome message toggled', ephemeral: true });
+    const key = guild.welcomeEnabled ? 'enabled' : 'disabled';
+    const content = await client.translate(interaction.locale, 'commands', `manage.subcommand_groups[1].subcommands[4].response.${key}`);
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -579,13 +599,15 @@ async function toggleMessageLog(interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[5].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
     // Check if a message log channel is set
     if (!guild.messageLogChannel) {
-        await interaction.reply({ content: 'Set the message log channel first', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[5].response.no_channel');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -595,7 +617,9 @@ async function toggleMessageLog(interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Message log toggled', ephemeral: true });
+    const key = guild.messageLogEnabled ? 'enabled' : 'disabled';
+    const content = await client.translate(interaction.locale, 'commands', `manage.subcommand_groups[1].subcommands[5].response.${key}`);
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -610,13 +634,15 @@ async function toggleModLog(interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[6].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
     // Check if a moderation log channel is set
     if (!guild.modLogChannel) {
-        await interaction.reply({ content: 'Set the moderation log channel first', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[6].response.no_channel');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -626,7 +652,9 @@ async function toggleModLog(interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Moderation log toggled', ephemeral: true });
+    const key = guild.modLogEnabled ? 'enabled' : 'disabled';
+    const content = await client.translate(interaction.locale, 'commands', `manage.subcommand_groups[1].subcommands[6].response.${key}`);
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -641,13 +669,15 @@ async function toggleReportChannel(interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[7].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
     // Check if a report channel is set
     if (!guild.reportChannel) {
-        await interaction.reply({ content: 'Set the report channel first', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[7].response.no_channel');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -657,7 +687,9 @@ async function toggleReportChannel(interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Report channel toggled', ephemeral: true });
+    const key = guild.reportEnabled ? 'enabled' : 'disabled';
+    const content = await client.translate(interaction.locale, 'commands', `manage.subcommand_groups[1].subcommands[7].response.${key}`);
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -669,25 +701,36 @@ async function toggleReportChannel(interaction) {
  */
 async function addServerLink(server, interaction) {
     const guildID = interaction.guild.id;
+
+    // Check if the server ID is not the same as the current server
+    if (server === guildID) {
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[8].response.same_server');
+        await interaction.reply({ content: 'You can\'t link the server to itself!', ephemeral: true });
+        return false;
+    }
+
     const guild = await guildSchema.findOne({ guildID });
     const otherGuild = await guildSchema.findOne({ guildID: server });
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'This guild is not in the database. Run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[8].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
     // Check if the other schema exists
     if (!otherGuild) {
-        await interaction.reply({ content: 'The specified guild is not in the database. Run `/setup` in that guild first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[8].response.no_other_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
     // Check each guild's linked servers
     for (const link of guild.linkedGuilds) {
         if (link.guildID === server) {
-            await interaction.reply({ content: 'A link already exists!', ephemeral: true });
+            const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[8].response.already_linked');
+            await interaction.reply({ content: content, ephemeral: true });
             return false;
         }
     }
@@ -702,7 +745,8 @@ async function addServerLink(server, interaction) {
     await guild.save();
     await otherGuild.save();
 
-    await interaction.reply({ content: 'Servers linked successfully', ephemeral: true });
+    const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[8].response.success', { server: server });
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
 }
 
@@ -719,13 +763,15 @@ async function removeServerLink(server, interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'This guild isn\'t in the database. Run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[9].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
     // Check if the other schema exists
     if (!otherGuild) {
-        await interaction.reply({ content: 'The provided guild couldn\'t be found.', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[9].response.no_other_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -742,10 +788,13 @@ async function removeServerLink(server, interaction) {
             await guild.save();
             await otherGuild.save();
 
-            await interaction.reply({ content: 'Servers unlinked successfully', ephemeral: true });
+            const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[9].response.success', { server: server });
+            await interaction.reply({ content: content, ephemeral: true });
             return true;
         }
     }
+    const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[9].response.not_linked');
+    await interaction.reply({ content: content, ephemeral: true });
     return false;
 }
 
@@ -759,7 +808,8 @@ async function resetServerSettings(interaction) {
 
     // Check if the schema exists
     if (!guild) {
-        await interaction.reply({ content: 'Guild not found, run `/setup` first!', ephemeral: true });
+        const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[10].response.no_guild');
+        await interaction.reply({ content: content, ephemeral: true });
         return false;
     }
 
@@ -786,30 +836,7 @@ async function resetServerSettings(interaction) {
     // Save the guild document
     await guild.save();
 
-    await interaction.reply({ content: 'Server reset successful', ephemeral: true });
+    const content = await client.translate(interaction.locale, 'commands', 'manage.subcommand_groups[1].subcommands[10].response.success');
+    await interaction.reply({ content: content, ephemeral: true });
     return true;
-}
-
-
-// This function will be used in the future when the messages are changed to embeds
-// In the meantime, it will be left as a reference
-/**
- * Fetch the translations for the command
- * @param {*} command The command name
- * @param {*} attribute The attribute to fetch
- * @returns The translations for the command
- */
-async function fetchTranslations(command, attribute) {
-    console.log(`Fetching translations for ${command}.${attribute}`)
-    const locales = ['id', 'da', 'de', 'en-GB', 'en-US', 'es-ES', 'es-419', 'fr', 'hr', 'it', 'lt', 'hu', 'nl', 'no', 'pl', 'pt-BR', 'ro', 'fi', 'sv-SE', 'vi', 'tr', 'cs', 'el', 'bg', 'ru', 'uk', 'hi', 'th', 'zh-CN', 'ja', 'zh-TW', 'ko'];
-    const translations = {};
-
-    for (const locale of locales) {
-        const translation = client.translate(locale, 'commands', `${command}.${attribute}`);
-        if (translation) {
-            translations[locale] = translation;
-        }
-    }
-
-    return translations;
 }

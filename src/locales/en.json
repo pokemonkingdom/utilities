@@ -29,7 +29,7 @@
                     "subcommands": [
                         {
                             "name": "addrole",
-                            "description": "Add a role to the staff list",
+                            "description": "Add a role to the staff role list", 
                             "subcommands": [],
                             "options": [
                                 {
@@ -39,131 +39,197 @@
                             ],
                             "response": {
                                 "no_guild": "Guild not found, run `/setup` first!",
-                                "already_added": "Role is already in the staff list!",
+                                "already_added": "Role was already in the staff role list!",
                                 "slug_empty": "Slug cannot be empty!",
-                                "slug_in_use": "Error while adding role %role%, `[%roleName% / ID: %roleID%]`\nSlug `%slug%` is already being used in role <@&%dbRoleID%>"
+                                "slug_in_use": "Error while adding role %role%, `[%roleName% / ID: %roleID%]`\nSlug `%slug%` is already being used in role <@&%dbRoleID%>",
+                                "position_negative": "Position must be a positive number!",
+                                "success": "Role %role% added to the staff role list with position %position% and slug `%slug%`"
                             }
                         },
                         {
                             "name": "removerole",
-                            "description": "Remove a role from the staff list",
+                            "description": "Remove a role from the staff role list",
                             "subcommands": [],
                             "options": [
                                 {
                                     "name": "role",
                                     "description": "The role to remove"
                                 }
-                            ]
+                            ],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "success": "Role `%role%` removed from the staff role list"
+                            }
                         },
                         {
                             "name": "listroles",
                             "description": "List all staff roles",
                             "subcommands": [],
-                            "options": []
+                            "options": [],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "role_not_found": "%roleName% (ROLE NOT FOUND)\n> Position: %position%\n> Slug: %slug%\n> ID: %roleID%",
+                                "success": "%roleName% (%role%)\n> Position: %position%\n> Slug: %slug%\n> ID: %roleID%\n> Users with the role: %roleMemberCount%"
+                            }
                         }
                     ],
                     "options": []
                 },
-                {
+                {   
                     "name": "guild",
                     "description": "Manage the server settings",
                     "subcommands": [
                         {
-                            "setwelcome": {
-                                "name": "setwelcome",
-                                "description": "Set the welcome channel",
-                                "subcommands": [],
-                                "options": [
-                                    {
-                                        "name": "channel",
-                                        "description": "The welcome channel"
-                                    }
-                                ]
-                            },
-                            "setmessagelog": {
-                                "name": "setmessagelog",
-                                "description": "Set the message log channel",
-                                "subcommands": [],
-                                "options": [
-                                    {
-                                        "name": "channel",
-                                        "description": "The message log channel"
-                                    }
-                                ]
-                            },
-                            "setmodlog": {
-                                "name": "setmodlog",
-                                "description": "Set the moderation log channel",
-                                "subcommands": [],
-                                "options": [
-                                    {
-                                        "name": "channel",
-                                        "description": "The moderation log channel"
-                                    }
-                                ]
-                            },
-                            "setreport": {
-                                "name": "setreport",
-                                "description": "Set the report channel",
-                                "subcommands": [],
-                                "options": [
-                                    {
-                                        "name": "channel",
-                                        "description": "The report channel"
-                                    }
-                                ]
-                            },
-                            "togglewelcome": {
-                                "name": "togglewelcome",
-                                "description": "Toggle the welcome message",
-                                "subcommands": [],
-                                "options": []
-                            },
-                            "togglemessagelog": {
-                                "name": "togglemessagelog",
-                                "description": "Toggle the message log",
-                                "subcommands": [],
-                                "options": []
-                            },
-                            "togglemodlog": {
-                                "name": "togglemodlog",
-                                "description": "Toggle the moderation log",
-                                "subcommands": [],
-                                "options": []
-                            },
-                            "togglereport": {
-                                "name": "togglereport",
-                                "description": "Toggle the report system",
-                                "subcommands": [],
-                                "options": []
-                            },
-                            "addlink": {
-                                "name": "addlink",
-                                "description": "Link the server to another server",
-                                "subcommands": [],
-                                "options": [
-                                    {
-                                        "name": "server",
-                                        "description": "The ID of the server to link"
-                                    }
-                                ]
-                            },
-                            "removelink": {
-                                "name": "removelink",
-                                "description": "Remove server link from another server",
-                                "subcommands": [],
-                                "options": [
-                                    {
-                                        "name": "server",
-                                        "description": "The ID of the server to unlink"
-                                    }
-                                ]
-                            },
-                            "reset": {
-                                "name": "reset",
-                                "description": "Reset the server settings",
-                                "subcommands": [],
-                                "options": []
+                            "name": "setwelcome",
+                            "description": "Set the welcome channel",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "channel",
+                                    "description": "The welcome channel"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "success": "Welcome channel set to %channel%"
+                            }
+                        },
+                        {
+                            "name": "setmessagelog",
+                            "description": "Set the message log channel",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "channel",
+                                    "description": "The message log channel"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "success": "Message log channel set to %channel%"
+                            }
+                        },
+                        {
+                            "name": "setmodlog",
+                            "description": "Set the moderation log channel",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "channel",
+                                    "description": "The moderation log channel"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "success": "Moderation log channel set to %channel%"
+                            }
+                        },
+                        {
+                            "name": "setreport",
+                            "description": "Set the report channel",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "channel",
+                                    "description": "The report channel"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "success": "Report channel set to %channel%"
+                            }
+                        },
+                        {
+                            "name": "togglewelcome",
+                            "description": "Toggle the welcome message",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "no_channel": "Welcome channel not set, set it using `/manage guild setwelcome` first!",
+                                "enabled": "Welcome message enabled",
+                                "disabled": "Welcome message disabled"
+                            }
+                        },
+                        {
+                            "name": "togglemessagelog",
+                            "description": "Toggle the message log",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "no_channel": "Message log channel not set, set it using `/manage guild setmessagelog` first!",
+                                "enabled": "Message log enabled",
+                                "disabled": "Message log disabled"
+                            }
+                        },
+                        {
+                            "name": "togglemodlog",
+                            "description": "Toggle the moderation log",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "no_channel": "Moderation log channel not set, set it using `/manage guild setmodlog` first!",
+                                "enabled": "Moderation log enabled",
+                                "disabled": "Moderation log disabled"
+                            }
+                        },
+                        {
+                            "name": "togglereport",
+                            "description": "Toggle the report system",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "no_channel": "Report channel not set, set it using `/manage guild setreport` first!",
+                                "enabled": "Report system enabled",
+                                "disabled": "Report system disabled"
+                            }
+                        },
+                        {
+                            "name": "addlink",
+                            "description": "Link the server to another server",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "server",
+                                    "description": "The ID of the server to link (staff server)"
+                                }
+                            ],
+                            "response": {
+                                "same_server": "You cannot link the server to itself!",
+                                "no_guild": "The current guild is not in the database. Run `/setup` first!",
+                                "no_other_guild": "The specified guild is not in the database. Make sure the other server has the bot and has run `/setup`!",
+                                "already_linked": "The server is already linked to the specified server!",
+                                "success": "Server linked to server with ID %server%"
+                            }
+                        },
+                        {
+                            "name": "removelink",
+                            "description": "Remove server link from another server",
+                            "subcommands": [],
+                            "options": [
+                                {
+                                    "name": "server",
+                                    "description": "The ID of the server to unlink"
+                                }
+                            ],
+                            "response": {
+                                "no_guild": "The current guild is not in the database. Run `/setup` first!",
+                                "no_other_guild": "The specified guild is not in the database. Make sure the other server has the bot and has run `/setup`!",
+                                "not_linked": "The server is not linked to the specified server!",
+                                "success": "Server unlinked from server with ID %server%"
+                            }
+                        },
+                        {
+                            "name": "reset",
+                            "description": "Reset the server settings",
+                            "subcommands": [],
+                            "options": [],
+                            "response": {
+                                "no_guild": "Guild not found, run `/setup` first!",
+                                "success": "Server settings reset"
                             }
                         }
                     ]
@@ -211,7 +277,7 @@
             "subcommands": [],
             "options": [],
             "response": {
-                "title": "Invite",
+                "title": "Invite the bot",
                 "description": "You can invite the bot to your server by clicking [here](%inviteLink%).",
                 "footer": "Requested by %user%"
             }
@@ -246,7 +312,7 @@
         },
         "support": {
             "name": "support",
-            "description": "Get the bot's support server",
+            "description": "Get the bot's support server invite",
             "subcommands": [],
             "options": [],
             "response": {
@@ -267,7 +333,7 @@
             }
         }
     },
-    "error_embed": {
+    "internal_error_embed": {
         "title": "Error",
         "description": "An error occurred while executing this command, below is the error message. Please report this to the bot developer. Thank you!",
         "message": "Error message",
